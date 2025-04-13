@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova X Browser</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --bg: #0f111a;
+      --tab: #1f2330;
+      --tab-active: #4caf50;
+      --text: #ffffff;
+      --accent: #00bfff;
+      --input: #2a2f45;
+      --hover: #55d9d6;
+      --active-bg: #303A52;
+      --offline-color: #FF5733;
+      --btn-bg: #4caf50;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      max-width: 60%;
+    }
+
+    .tab {
+      background: var(--tab);
+      padding: 8px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .tab.active {
+      background: var(--tab-active);
+    }
+
+    .tab .close {
+      margin-left: 12px;
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    .search-bar {
+      flex: 1;
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--input);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+    }
+
+    .menu-button {
+      font-size: 22px;
+      cursor: pointer;
+      background: none;
+      color: var(--text);
+      border: none;
+    }
+
+    .content {
+      position: relative;
+      height: calc(100vh - 80px);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+    }
+
+    iframe.active {
+      display: block;
+    }
+
+    .home {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home h1 {
+      font-size: 48px;
+      color: var(--accent);
+    }
+
+    .shortcuts {
+      display: flex;
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .shortcut {
+      background: var(--tab);
+      padding: 12px 20px;
+      border-radius: 10px;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .shortcut:hover {
+      background: var(--hover);
+    }
+
+    .offline-message {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      color: var(--offline-color);
+    }
+
+    .socials {
+      display: flex;
+      gap: 20px;
+      margin-top: 50px;
+    }
+
+    .socials a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 24px;
+    }
+
+    .ai-box {
+      margin-top: 30px;
+      background: #1a1f2e;
+      padding: 15px;
+      border-radius: 12px;
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ai-box input {
+      padding: 10px;
+      width: 100%;
+      background: #333;
+      color: var(--text);
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    .ai-box button {
+      background-color: var(--accent);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .ai-box button:hover {
+      background-color: #ff8c00;
+    }
+
+    .ai-response {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .game-container {
+      display: none;
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      width: 300px;
+    }
+
+    .game-container button {
+      background-color: var(--btn-bg);
+      color: var(--text);
+      padding: 12px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .game-container button:hover {
+      background-color: #388e3c;
+    }
+
+    .game-screen {
+      display: block;
+      margin-top: 20px;
+    }
+
+    /* Simple styles for the game */
+    .game-screen canvas {
+      background: #333;
+      width: 100%;
+      height: 200px;
+    }
+
+    #search-bar{
+      text-align: center;
+      width: 100%;
+      position: fixed;
+      margin-top: 20px;
+    }
+    #searchInput{
+      width: 80%;
+      border-radius: 20px;
+    }
+    #secondSearchInput {
+      margin-top: 20px;
+      padding: 1.5em;
+      border-radius: 10px;
+      border: none;
+      width: 30%;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="tabs" id="tabs"></div>
+    <div class="search-bar">
+    </div>
+    
+    
+  </div>
+  <div id="search-bar">
+    <div class="navbar">
+        <button onclick="location.href='index.html'">🏠</button>
+        <button onclick="history.back()">◀️</button>
+        <button onclick="history.forward()">▶️</button>
+        <button onclick="location.reload()">🔄</button>
+    <input type="text" style="padding: 1.5em;" id="searchInput" placeholder="Search or type a URL..." onkeydown="if(event.key === 'Enter') performSecondSearch()">
+    <button class="menu-button" onclick="alert('Menu coming soon: History, Bookmarks, Settings, Extensions, etc.')">☰</button>
+  </div>
+
+  <div class="content" id="content">
+    <div class="home" id="home">
+      <h1>🚀 Nova x Browser</h1>
+      <input type="text" id="secondSearchInput" placeholder="See More (Google Search)" onkeydown="if(event.key === 'Enter') performSecondSearch()">
+      <div class="shortcuts">
+        <div class="shortcut" onclick="quickOpen('https://youtube.com')">YouTube</div>
+        <div class="shortcut" onclick="quickOpen('https://twitter.com')">Twitter</div>
+        <div class="shortcut" onclick="quickOpen('https://github.com')">GitHub</div>
+      </div>
+
+
+
+      <div class="ai-box">
+        <input type="text" id="aiInput" placeholder="Ask Nova AI..." />
+        <button onclick="askAI()">Ask AI</button>
+        <div id="aiResponse" class="ai-response"></div>
+      </div>
+    </div>
+
+    <div class="offline-message" id="offlineMessage">⚠️ You are offline. Enjoy the Running Boy game!</div>
+    
+  <script>
+    const tabs = [];
+    let activeTab = null;
+    const tabsEl = document.getElementById("tabs");
+    const contentEl = document.getElementById("content");
+    const homeEl = document.getElementById("home");
+    const offlineMessage = document.getElementById("offlineMessage");
+    const gameContainer = document.getElementById("gameContainer");
+    const gameCanvas = document.getElementById("gameCanvas");
+    const ctx = gameCanvas.getContext('2d');
+    let isOffline = false;
+
+    // Create a new tab
+    function createTab(title, url) {
+      const id = "tab-" + Date.now();
+
+      // Tab Button
+      const tabBtn = document.createElement("div");
+      tabBtn.className = "tab";
+      tabBtn.innerHTML = `${title} <span class="close" onclick="closeTab('${id}', event)">×</span>`;
+      tabBtn.onclick = () => switchTab(id);
+      tabsEl.appendChild(tabBtn);
+
+      // Iframe
+      const iframe = document.createElement("iframe");
+      iframe.src = url;
+      iframe.id = id;
+      contentEl.appendChild(iframe);
+
+      tabs.push({ id, tabBtn, iframe });
+      switchTab(id);
+    }
+    
+
+    // Switch between tabs
+    function switchTab(id) {
+      tabs.forEach(tab => {
+        tab.tabBtn.classList.remove("active");
+        tab.iframe.classList.remove("active");
+      });
+
+      const current = tabs.find(t => t.id === id);
+      if (current) {
+        current.tabBtn.classList.add("active");
+        current.iframe.classList.add("active");
+        activeTab = current;
+        homeEl.style.display = "none";
+      }
+    }
+
+    // Close a tab
+    function closeTab(id, e) {
+      e.stopPropagation();
+      const index = tabs.findIndex(t => t.id === id);
+      if (index !== -1) {
+        tabs[index].tabBtn.remove();
+        tabs[index].iframe.remove();
+        tabs.splice(index, 1);
+        if (tabs.length > 0) {
+          switchTab(tabs[tabs.length - 1].id);
+        } else {
+          homeEl.style.display = "flex";
+        }
+      }
+    }
+
+    // Search handling
+    function handleSearch() {
+      const input = document.getElementById("searchInput").value.trim();
+      if (!input) return;
+
+      const url = input.startsWith('http') ? input : `https://www.google.com/search?q=${input}`;
+      createTab(input, url);
+      document.getElementById("searchInput").value = "";
+    }
+
+    // Second Search input (See More)
+    function handleSecondSearch() {
+      const input = document.getElementById("secondSearchInput").value.trim();
+      if (!input) return;
+
+      const url = `https://www.google.com/search?q=${input}`;
+      createTab(input, url);
+      document.getElementById("secondSearchInput").value = "";
+    }
+
+    // Voice Search
+    function startVoiceSearch() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert('Your browser does not support voice recognition.');
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const result = event.results[0][0].transcript;
+        document.getElementById("searchInput").value = result;
+        handleSearch();
+      };
+
+      recognition.onerror = function() {
+        alert('Sorry, an error occurred with voice recognition.');
+      };
+    }
+
+    // Quick open (shortcuts)
+    function quickOpen(url) {
+      createTab(url, url);
+    }
+
+    // Ask AI
+    function askAI() {
+      const input = document.getElementById("aiInput").value.trim();
+      if (!input) return;
+
+      const response = `You asked: ${input}. (AI response coming soon...)`; // Example response
+      document.getElementById("aiResponse").innerText = response;
+    }
+    
+    //perform search
+    function performSearch() {
+                  const query = document.getElementById("searchInput").value.trim();
+                  if (query !== "") {
+                    if (query.includes(".") && !query.includes(" ")) {
+                      window.location.href = query.startsWith("http") ? query : `https://${query}`;
+                    } else {
+                      window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                    }
+                  }
+                }
+
+                function performSecondSearch() {
+                  const query = document.getElementById("secondSearchInput").value.trim();
+                  if (query !== "") {
+                    window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+                  }
+                }
+
+    // Game
+    function startGame() {
+      gameContainer.style.display = "block";
+      gameCanvas.width = 800;
+      gameCanvas.height = 200;
+
+      // Simple game logic (Running boy game)
+      let x = 10;
+      let y = 100;
+      let speed = 3;
+
+      function drawGame() {
+        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(x, y, 50, 50);
+
+        if (x < gameCanvas.width) {
+          x += speed;
+        } else {
+          x = 10;
+        }
+
+        requestAnimationFrame(drawGame);
+      }
+
+      drawGame();
+    }
+
+    // Check offline and show message
+    window.addEventListener("offline", function() {
+      isOffline = true;
+      offlineMessage.style.display = "block";
+      gameContainer.style.display = "block";
+    });
+
+    window.addEventListener("online", function() {
+      isOffline = false;
+      offlineMessage.style.display = "none";
+      gameContainer.style.display = "none";
+    });
+
+    // Initial setup
+    document.getElementById("searchInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        handleSearch();
+      }
+    });
+
+    document.getElementById("secondSearchInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        handleSecondSearch();
+      }
+    });
+    function reloadTab() {
+      if (activeTab) {
+        browserFrame.contentWindow.location.reload();
+      }
+    }
+
+    function goBack() {
+      if (activeTab && browserFrame.contentWindow.history.length > 0) {
+        browserFrame.contentWindow.history.back();
+      }
+    }
+
+    function goForward() {
+      if (activeTab && browserFrame.contentWindow.history.length > 0) {
+        browserFrame.contentWindow.history.forward();
+      }
+    }
+
+    // Home function
+    function goHome() {
+      if (activeTab) {
+        browserFrame.src = "https://www.google.com";
+      }
+    }
+  </script>
+
+  <script>
+  // Create a new tab
+  function createTab(title, url) {
+    const id = "tab-" + Date.now();
+
+    // Tab Button
+    const tabBtn = document.createElement("div");
+    tabBtn.className = "tab";
+    tabBtn.innerHTML = `${title} <span class="close" onclick="closeTab('${id}', event)">×</span>`;
+    tabBtn.onclick = () => switchTab(id);
+    tabsEl.appendChild(tabBtn);
+
+    // Iframe
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    iframe.id = id;
+    contentEl.appendChild(iframe);
+
+    tabs.push({ id, tabBtn, iframe });
+    switchTab(id);
+  }
+
+  // Switch between tabs
+  function switchTab(id) {
+    tabs.forEach(tab => {
+      tab.tabBtn.classList.remove("active");
+      tab.iframe.classList.remove("active");
+    });
+
+    const current = tabs.find(t => t.id === id);
+    if (current) {
+      current.tabBtn.classList.add("active");
+      current.iframe.classList.add("active");
+      activeTab = current;
+      homeEl.style.display = "none";
+    }
+  }
+
+  // Close a tab
+  function closeTab(id, e) {
+    e.stopPropagation();
+    const index = tabs.findIndex(t => t.id === id);
+    if (index !== -1) {
+      tabs[index].tabBtn.remove();
+      tabs[index].iframe.remove();
+      tabs.splice(index, 1);
+      if (tabs.length > 0) {
+        switchTab(tabs[tabs.length - 1].id);
+      } else {
+        homeEl.style.display = "flex";
+      }
+    }
+  }
+
+  // ✅ Search handling (fixed)
+  function handleSecondSearch() {
+    const input = document.getElementById("SearchInput").value.trim();
+    if (!input) return;
+
+    const url = `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+    createTab(input, url);
+    document.getElementById("SearchInput").value = "";
+  }
+
+  // ✅ Second Search input (fixed)
+  function handleSecondSearch() {
+    const input = document.getElementById("secondSearchInput").value.trim();
+    if (!input) return;
+
+    const url = `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+    createTab(input, url);
+    document.getElementById("secondSearchInput").value = "";
+  }
+
+  function startVoiceSearch() {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert('Your browser does not support voice recognition.');
+      return;
+    }
+
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      const result = event.results[0][0].transcript;
+      document.getElementById("searchInput").value = result;
+      handleSearch();
+    };
+
+    recognition.onerror = function() {
+      alert('Sorry, an error occurred with voice recognition.');
+    };
+  }
+
+  function quickOpen(url) {
+    createTab(url, url);
+  }
+
+  function askAI() {
+    const input = document.getElementById("aiInput").value.trim();
+    if (!input) return;
+
+    const response = `You asked: ${input}. (AI response coming soon...)`;
+    document.getElementById("aiResponse").innerText = response;
+  }
+
+  function startGame() {
+    gameContainer.style.display = "block";
+    gameCanvas.width = 800;
+    gameCanvas.height = 200;
+
+    let x = 10;
+    let y = 100;
+    let speed = 3;
+
+    function drawGame() {
+      ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(x, y, 50, 50);
+
+      if (x < gameCanvas.width) {
+        x += speed;
+      } else {
+        x = 10;
+      }
+
+      requestAnimationFrame(drawGame);
+    }
+
+    drawGame();
+  }
+
+  window.addEventListener("offline", function() {
+    isOffline = true;
+    offlineMessage.style.display = "block";
+    gameContainer.style.display = "block";
+  });
+
+  window.addEventListener("online", function() {
+    isOffline = false;
+    offlineMessage.style.display = "none";
+    gameContainer.style.display = "none";
+  });
+
+  document.getElementById("searchInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  });
+
+  document.getElementById("secondSearchInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+      handleSecondSearch();
+    }
+  });
+
+  function reloadTab(){
+    if (activeTab){
+      activeTab.iframe.contentWindow.location.reload();
+    }
+  }
+
+  function goBack() {
+    if (activeTab && activeTab.iframe.contentWindow.history.length > 0){
+      activeTab.iframe.contentWindow.history.back();
+    }
+  }
+
+  function goForward() {
+    if (activeTab && activeTab.iframe.contentWindow.history.length > 0);{
+      activeTab.iframe.contentWindow.history.forward();
+    }
+  }
+
+  function goHome() {
+    if (activeTab) {
+      activeTab.iframe.src = "https://www.google.com";
+    }
+  }
+
+</script>
+
+</body>
+</html>
